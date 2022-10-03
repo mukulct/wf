@@ -1,4 +1,4 @@
-module inet.af/wf
+module suryanathanp/wf
 
 go 1.18
 
