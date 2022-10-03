@@ -681,9 +681,36 @@ type Rule struct {
 
 // TODO: figure out what currently unexposed flags do: Indexed
 // TODO: figure out what ProviderContextKey is about. MSDN doesn't explain what contexts are.
+func (s *Session) RulesForProvider(provider ProviderID, layer LayerID) ([]*Rule, error) { // TODO: support filter settings
+	var enum windows.Handle
+
+	var a arena
+	defer a.Dispose()
+
+	var filterEnumTemplate = toFilterEnumTemplate(&a, provider, layer)
+
+	if err := fwpmFilterCreateEnumHandle0(s.handle, filterEnumTemplate, &enum); err != nil {
+		return nil, err
+	}
+	defer fwpmFilterDestroyEnumHandle0(s.handle, enum)
+
+	var ret []*Rule
+
+	for {
+		rules, err := s.getRulePage(enum)
+		if err != nil {
+			return nil, err
+		}
+		if len(rules) == 0 {
+			return ret, nil
+		}
+		ret = append(ret, rules...)
+	}
+}
 
 func (s *Session) Rules() ([]*Rule, error) { // TODO: support filter settings
 	var enum windows.Handle
+
 	if err := fwpmFilterCreateEnumHandle0(s.handle, nil, &enum); err != nil {
 		return nil, err
 	}

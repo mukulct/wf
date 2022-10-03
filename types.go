@@ -222,7 +222,7 @@ type fwpmProviderContextEnumTemplate0 struct {
 
 //go:notinheap
 type fwpmFilterEnumTemplate0 struct {
-	ProviderKey             *ProviderID
+	ProviderKey             *windows.GUID
 	LayerKey                windows.GUID
 	EnumType                filterEnumType
 	Flags                   filterEnumFlags

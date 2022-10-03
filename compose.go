@@ -33,6 +33,15 @@ func toSession0(a *arena, opts *Options) *fwpmSession0 {
 	return ret
 }
 
+func toFilterEnumTemplate(a *arena, provider ProviderID, layer LayerID) *fwpmFilterEnumTemplate0 {
+	ret := (*fwpmFilterEnumTemplate0)(a.Alloc(unsafe.Sizeof(fwpmFilterEnumTemplate0{})))
+	ret.ProviderKey = toGUID(a, windows.GUID(provider))
+	ret.LayerKey = *toGUID(a, windows.GUID(layer))
+	ret.Flags = (1 << (filterEnumFlagsIncludeBootTime - 1)) | (1 << (filterEnumFlagsIncludeDisabled - 1))
+	ret.ActionMask = 0xFFFFFFFF
+	return ret
+}
+
 // toSublayerEnumTemplate0 returns an arena-allocated
 // fwpmSublayerEnumTemplate0 that filters on the given provider, or
 // all if provider is nil.
