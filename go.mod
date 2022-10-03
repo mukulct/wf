@@ -1,4 +1,4 @@
-module suryanathanp/wf
+module github.com/suryanathanp/wf
 
 go 1.18
 
