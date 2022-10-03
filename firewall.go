@@ -22,7 +22,8 @@ type layerTypes map[LayerID]fieldTypes
 type Session struct {
 	handle windows.Handle
 	// layerTypes is a map of layer ID -> field ID -> Go type for that field.
-	layerTypes layerTypes
+	layerTypes         layerTypes
+	transactionStarted bool
 }
 
 // Options configures a Session.
@@ -63,8 +64,9 @@ func New(opts *Options) (*Session, error) {
 	}
 
 	ret := &Session{
-		handle:     handle,
-		layerTypes: layerTypes{},
+		handle:             handle,
+		layerTypes:         layerTypes{},
+		transactionStarted: false,
 	}
 
 	// Populate the layer type cache.
@@ -84,8 +86,46 @@ func New(opts *Options) (*Session, error) {
 	return ret, nil
 }
 
+func (s *Session) TransactionBegin() error {
+	if s.handle == 0 {
+		return errors.New("Invalid session")
+	}
+
+	err := fwpmTransactionBegin0(s.handle, 0)
+	if err == nil {
+		s.transactionStarted = true
+	}
+	return err
+}
+
+func (s *Session) TransactionCommit() error {
+	if s.transactionStarted == false {
+		return nil
+	}
+	err := fwpmTransactionCommit0(s.handle)
+	if err == nil {
+		s.transactionStarted = false
+	}
+	return err
+}
+
+func (s *Session) TransactionAbort() error {
+	if s.transactionStarted == false {
+		return nil
+	}
+
+	err := fwpmTransactionAbort0(s.handle)
+	if err == nil {
+		s.transactionStarted = false
+	}
+	return err
+}
+
 // Close implements io.Closer.
 func (s *Session) Close() error {
+	if s.transactionStarted {
+		return errors.New("Cannot close session with an ongoing transaction")
+	}
 	if s.handle == 0 {
 		return nil
 	}
