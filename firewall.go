@@ -763,6 +763,8 @@ func (s *Session) AddRule(r *Rule) error {
 		return err
 	}
 
+	r.KernelID = f.FilterID
+
 	return nil
 }
 
