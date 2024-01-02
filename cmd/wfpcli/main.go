@@ -16,7 +16,7 @@ import (
 
 	"github.com/peterbourgon/ff/v3/ffcli"
 	"golang.org/x/sys/windows"
-	"github.com/suryanathanp/wf"
+	"github.com/mukulct/wf"
 )
 
 var (

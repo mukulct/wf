@@ -677,6 +677,9 @@ type Rule struct {
 	// to its provider being associated with an inactive Windows
 	// service. See Provider.ServiceName for details.
 	Disabled bool
+
+	// Enable logging for the rule
+	EnableFirewallLog bool
 }
 
 // TODO: figure out what currently unexposed flags do: Indexed
